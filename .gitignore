@@ -49,3 +49,6 @@ crashlytics-build.properties
 fabric.properties
 __pycache__/main.cpython-310.pyc
 .DS_Store
+
+# 機敏資訊
+.env

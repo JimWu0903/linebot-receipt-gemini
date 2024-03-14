@@ -20,6 +20,13 @@ import aiohttp
 import PIL.Image
 from firebase import firebase
 
+# local 參數取法
+# import dotenv
+# dotenv.load_dotenv()
+# channel_secret = os.environ.get('ChannelSecret')
+# channel_access_token = os.environ.get('ChannelAccessToken')
+# gemini_key = os.environ.get('GEMINI_API_KEY')
+# firebase_url = os.environ.get('FIREBASE_URL')
 
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('ChannelSecret', None)
