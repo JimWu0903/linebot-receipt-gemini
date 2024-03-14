@@ -21,18 +21,18 @@ import PIL.Image
 from firebase import firebase
 
 # local 參數取法
-# import dotenv
-# dotenv.load_dotenv()
-# channel_secret = os.environ.get('ChannelSecret')
-# channel_access_token = os.environ.get('ChannelAccessToken')
-# gemini_key = os.environ.get('GEMINI_API_KEY')
-# firebase_url = os.environ.get('FIREBASE_URL')
+import dotenv
+dotenv.load_dotenv()
+channel_secret = os.environ.get('ChannelSecret')
+channel_access_token = os.environ.get('ChannelAccessToken')
+gemini_key = os.environ.get('GEMINI_API_KEY')
+firebase_url = os.environ.get('FIREBASE_URL')
 
 # get channel_secret and channel_access_token from your environment variable
-channel_secret = os.getenv('ChannelSecret', None)
-channel_access_token = os.getenv('ChannelAccessToken', None)
-gemini_key = os.getenv('GEMINI_API_KEY')
-firebase_url = os.getenv('FIREBASE_URL')
+# channel_secret = os.getenv('ChannelSecret', None)
+# channel_access_token = os.getenv('ChannelAccessToken', None)
+# gemini_key = os.getenv('GEMINI_API_KEY')
+# firebase_url = os.getenv('FIREBASE_URL')
 imgage_prompt = '''
 This is a receipt, and you are a secretary. 
 Please organize the details from the receipt into JSON format for me. 
@@ -105,7 +105,6 @@ async def handle_callback(request: Request):
             continue
 
         user_id = event.source.user_id
-
         global user_receipt_path
         user_receipt_path = f'receipt_helper/{user_id}/Receipts'
         global user_item_path
@@ -118,8 +117,8 @@ async def handle_callback(request: Request):
 
             # Provide a default value for reply_msg
             reply_msg = TextSendMessage(text='No message to reply with')
-
             msg = event.message.text
+            print(f"msg: {msg}")
             if msg == '!清空':
                 reply_msg = TextSendMessage(text='對話歷史紀錄已經清空！')
                 fdb.delete(user_all_receipts_path, None)
@@ -132,11 +131,13 @@ async def handle_callback(request: Request):
                     {"role": "user", "parts": prompt_msg})
                 response = generate_gemini_text_complete(messages)
                 reply_msg = TextSendMessage(text=response.text)
-
-            await line_bot_api.reply_message(
+            try:
+                await line_bot_api.reply_message(
                 event.reply_token,
                 reply_msg
-            )
+                )
+            except Exception as e:
+                print(f"An error occurred: {e}")
         elif (event.message.type == "image"):
             message_content = await line_bot_api.get_message_content(
                 event.message.id)
